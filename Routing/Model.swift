@@ -164,16 +164,28 @@ extension Track {
     }
     
     static func load2() -> [Track] {
-        var allTracks: [[Track]] = []
-        
-        let trackUrls = Bundle.main.urls(forResourcesWithExtension: "gpx", subdirectory: "gpx")!
-        trackUrls.enumerated().forEach { (index, url) in
-            if let reader = TrackReader(url: url) {
-                let track = Track(coordinates: reader.points, color: Color.allCases[index], number: 0, name: reader.name)
-                allTracks.append([track])
-            }
+        guard let trackUrls = Bundle.main.urls(forResourcesWithExtension: "gpx", subdirectory: "gpx1") else {
+            return []
         }
         
+        let colors = Color.allCases.shuffled()
+        let numberOfColors = colors.count
+        var colorIndex = 0
+
+        var allTracks: [[Track]] = []
+
+        for url in trackUrls {
+            if let reader = TrackReader(url: url) {
+                let track = Track(coordinates: reader.points, color: Color.allCases[colorIndex], number: 0, name: reader.name)
+                allTracks.append([track])
+                
+                colorIndex += 1
+                if colorIndex == numberOfColors {
+                    colorIndex = 0
+                }
+            }
+        }
+
         return Array(allTracks.joined())
     }
 }

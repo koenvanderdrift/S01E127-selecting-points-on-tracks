@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum Color: Int, Codable, Equatable, Hashable {
+enum Color: Int, Codable, Equatable, Hashable, CaseIterable {
     case red
     case turquoise
     case brightGreen
@@ -160,6 +160,20 @@ extension Track {
                 return Track(coordinates: reader.points, color: color, number: numberAndName.0, name: reader.name)
             }
         }
+        return Array(allTracks.joined())
+    }
+    
+    static func load2() -> [Track] {
+        var allTracks: [[Track]] = []
+        
+        let trackUrls = Bundle.main.urls(forResourcesWithExtension: "gpx", subdirectory: "gpx")!
+        trackUrls.enumerated().forEach { (index, url) in
+            if let reader = TrackReader(url: url) {
+                let track = Track(coordinates: reader.points, color: Color.allCases[index], number: 0, name: reader.name)
+                allTracks.append([track])
+            }
+        }
+        
         return Array(allTracks.joined())
     }
 }
